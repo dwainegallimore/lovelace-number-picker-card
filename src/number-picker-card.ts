@@ -165,6 +165,7 @@ const CARD_STYLES = `
   .nc-wheel-scroll {
     height: calc(var(--nc-item-height) * 3);
     overflow-y: scroll;
+    overscroll-behavior: contain;
     scroll-snap-type: y mandatory;
     scrollbar-width: none;
     padding: var(--nc-item-height) 0;
