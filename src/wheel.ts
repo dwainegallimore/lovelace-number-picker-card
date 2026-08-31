@@ -124,7 +124,7 @@ export class NumberWheel {
 
   /** Programmatically move to a value (e.g. syncing from hass). */
   setValue(value: number): void {
-    if (value === this.currentValue || this.values.length === 0) {
+    if (this.values.length === 0) {
       return;
     }
 
@@ -134,6 +134,20 @@ export class NumberWheel {
     }
 
     this.currentValue = value;
+
+    // Skip the re-scroll only when the target value hasn't moved AND the wheel is already
+    // sitting at the right index. Trusting currentValue alone here used to mean any external
+    // event that nudges scrollTop away from it (a browser re-layout quirk, some other script
+    // touching the DOM, anything) left the wheel silently stuck forever, since no code path
+    // revisits a value that "hasn't changed". Skip only when at rest, though - while a
+    // scroll/settle is actively in flight (a drag, momentum), scrollTop legitimately differs
+    // from the settled position and re-snapping now would fight the user's own gesture.
+    const currentIndex = Math.round(this.scrollEl.scrollTop / this.itemHeight);
+    const isAtRest = this.settleTimer === undefined;
+    if (index === currentIndex || !isAtRest) {
+      return;
+    }
+
     this.scrollToIndex(index);
   }
 
@@ -204,6 +218,11 @@ export class NumberWheel {
   }
 
   private onSettle(): void {
+    // The debounce timer that got us here has already fired - clear the stored id so
+    // `settleTimer === undefined` reliably means "at rest" for anything that checks it
+    // (window.setTimeout never resets the variable on its own once the callback runs).
+    this.settleTimer = undefined;
+
     const index = Math.min(Math.max(Math.round(this.scrollEl.scrollTop / this.itemHeight), 0), this.values.length - 1);
     const value = this.values[index];
     const valueChanged = value !== this.currentValue;
