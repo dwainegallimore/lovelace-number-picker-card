@@ -103,6 +103,7 @@ layout:
 | ---- | ------- | ------------ | -------------------------------------------------- | ------- |
 | name | boolean | **Optional** | Hides the card name                               | `false` |
 | icon | boolean | **Optional** | Hides the card icon (only with controls "inside") | `false` |
+| unit | boolean | **Optional** | Hides the unit / suffix next to the value         | `false` |
 
 ### Theme Variables
 

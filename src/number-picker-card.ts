@@ -198,6 +198,7 @@ const CARD_STYLES = `
     align-items: center;
     justify-content: center;
     height: var(--nc-item-height);
+    padding-left: 8px;
     padding-right: 4px;
     font-size: 1.1rem;
     font-weight: 500;
@@ -431,7 +432,7 @@ export class NumberPickerCard extends HTMLElement implements LovelaceCard {
     });
     wheelGroup.appendChild(this._wheel.element);
 
-    if (this._unit) {
+    if (this._unit && !this._config.hide?.unit) {
       const suffix = document.createElement('div');
       suffix.className = 'nc-suffix';
       suffix.textContent = this._unit;

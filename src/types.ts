@@ -102,4 +102,5 @@ export namespace Layout {
 export interface NumberPickerHideConfig {
   name?: boolean;
   icon?: boolean;
+  unit?: boolean;
 }

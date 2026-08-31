@@ -11,6 +11,7 @@ const NAME_TO_LABEL_MAP: Record<string, string> = {
   embedded: 'Embedded?',
   thin: 'Thin layout?',
   icon: 'Icon',
+  unit: 'Unit / suffix',
 };
 
 const SCHEMA = [
@@ -105,6 +106,7 @@ const SCHEMA = [
         schema: [
           { name: 'name', selector: { boolean: {} } },
           { name: 'icon', selector: { boolean: {} } },
+          { name: 'unit', selector: { boolean: {} } },
         ],
       },
     ],
