@@ -140,7 +140,7 @@ const CARD_STYLES = `
 
   .nc-wheel {
     position: relative;
-    width: 3.4em;
+    min-width: 3.4em;
     height: var(--nc-item-height);
     outline: none;
     overflow: hidden;
@@ -179,6 +179,7 @@ const CARD_STYLES = `
     align-items: center;
     justify-content: center;
     scroll-snap-align: center;
+    white-space: nowrap;
     font-size: 1.5rem;
     font-weight: 400;
     font-variant-numeric: tabular-nums;
