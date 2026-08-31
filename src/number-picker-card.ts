@@ -97,10 +97,18 @@ const CARD_STYLES = `
     gap: 12px;
     margin-right: 16px;
     user-select: none;
+    /* The wheel (.nc-content, flex-shrink: 0 below) must never be clipped by ha-card's own
+       overflow: hidden when a narrow tile can't fit both at their natural width - this is the
+       one that's allowed to give ground, wrapping its text instead. Flex items default to
+       min-width: auto (their own content's width as a floor), which some themes' fonts/sizing
+       push wide enough that it stops this from actually shrinking - min-width: 0 removes that
+       floor so the shrink can go all the way down to wrapped text. */
+    min-width: 0;
+    flex-shrink: 1;
   }
 
-  .nc-nested-name state-badge { color: var(--primary-text-color); }
-  .nc-nested-name span { color: var(--primary-text-color); font-weight: 500; }
+  .nc-nested-name state-badge { color: var(--primary-text-color); flex-shrink: 0; }
+  .nc-nested-name span { color: var(--primary-text-color); font-weight: 500; min-width: 0; }
 
   .nc-content {
     display: flex;
@@ -302,7 +310,7 @@ export class NumberPickerCard extends HTMLElement implements LovelaceCard {
   getGridOptions(): LovelaceGridOptions {
     return {
       columns: 4,
-      rows: 2,
+      rows: 'auto',
       min_columns: 3,
       max_columns: 12,
       min_rows: 1,
