@@ -1,6 +1,6 @@
 {
   "name": "number-picker-card",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Dwaine Gallimore",
   "description": "Lovelace number-picker-card - a dependency-free, fluid scroll-wheel number picker for input_number entities",
   "keywords": [
