@@ -114,6 +114,10 @@ Number Picker Card automatically picks up colors from your Lovelace theme, but y
 | number-picker-accent-color       | `var(--primary-color)`         | Selected value color        |
 | number-picker-border-radius      | `var(--ha-card-border-radius)` | Border radius of the card   |
 
+## Credits
+
+This card's architecture and look-and-feel are based on [lovelace-time-picker-card](https://github.com/dwainegallimore/lovelace-time-picker-card), itself a rewrite of [GeorgeSG/lovelace-time-picker-card](https://github.com/GeorgeSG/lovelace-time-picker-card) by **Georgi Gardev**. Credit for the original fluid scroll-wheel picker design goes to Georgi - this card adapts that same pattern for `input_number` entities.
+
 ## Meta
 
 **Dwaine Gallimore**
