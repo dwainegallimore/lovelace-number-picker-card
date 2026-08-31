@@ -113,6 +113,17 @@ export class NumberWheel {
       this.items.push(item);
     }
 
+    // Grow the wheel to fit its widest formatted value - a fixed CSS width clips longer
+    // values (e.g. "-20.0" is much wider than "50"). The first and last values are always
+    // the widest, since decimalsForStep fixes the decimal count for every value in the range
+    // and only the integer part's magnitude (plus a possible minus sign) varies between them.
+    if (this.items.length > 0) {
+      const widest = Math.max(this.items[0].scrollWidth, this.items[this.items.length - 1].scrollWidth);
+      if (widest > 0) {
+        this.element.style.width = `${widest}px`;
+      }
+    }
+
     const index = Math.max(values.indexOf(selected), 0);
 
     // Force a layout flush before scrolling - without it the browser may still be
