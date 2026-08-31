@@ -34,6 +34,17 @@ export class NumberWheel {
   private rafId: number | null = null;
   private settleTimer: number | undefined;
   private collapseTimer: number | undefined;
+  /**
+   * An index whose scroll assignment was clamped to 0 because the wheel had zero size at the
+   * time (a hidden dashboard view/tab, a collapsed ancestor, a sections/masonry grid cell that
+   * hasn't been sized yet) - re-applied by the ResizeObserver below the moment the wheel
+   * actually gets laid out. Without this, a value that arrives before the card is visible
+   * gets stuck showing its default forever: `setValue()` only re-scrolls when the *value*
+   * changes, and on every later hass update it already matches, so the wrong on-screen
+   * position (still at index 0) is never revisited.
+   */
+  private pendingIndex: number | null = null;
+  private readonly resizeObserver: ResizeObserver;
 
   constructor(options: WheelOptions) {
     this.itemHeight = options.itemHeight ?? DEFAULT_ITEM_HEIGHT;
@@ -60,6 +71,20 @@ export class NumberWheel {
     this.element.addEventListener('pointerleave', () => this.setActive(false));
     this.element.addEventListener('focus', () => this.setActive(true));
     this.element.addEventListener('blur', () => this.setActive(false));
+
+    this.resizeObserver = new ResizeObserver(() => this.onResize());
+    this.resizeObserver.observe(this.scrollEl);
+  }
+
+  /** Catches up a scroll position that was deferred because the wheel had zero size when it was requested. */
+  private onResize(): void {
+    if (this.pendingIndex === null || this.scrollEl.clientHeight === 0) {
+      return;
+    }
+    const index = this.pendingIndex;
+    this.pendingIndex = null;
+    this.scrollEl.scrollTo({ top: index * this.itemHeight, behavior: 'auto' });
+    this.updateVisualState();
   }
 
   /** Reveals the full wheel immediately, or schedules a graceful collapse after a short delay. */
@@ -93,7 +118,7 @@ export class NumberWheel {
     // Force a layout flush before scrolling - without it the browser may still be
     // measuring the pre-insertion (empty) scrollHeight and silently clamp this to 0.
     void this.scrollEl.offsetHeight;
-    this.scrollEl.scrollTo({ top: index * this.itemHeight, behavior: 'auto' });
+    this.scrollToIndex(index, 'auto');
     this.updateVisualState();
   }
 
@@ -116,9 +141,19 @@ export class NumberWheel {
     this.element.focus();
   }
 
-  private scrollToIndex(index: number): void {
+  private scrollToIndex(index: number, behavior: ScrollBehavior = 'smooth'): void {
     const clamped = Math.min(Math.max(index, 0), this.values.length - 1);
-    this.scrollEl.scrollTo({ top: clamped * this.itemHeight, behavior: 'smooth' });
+
+    if (this.scrollEl.clientHeight === 0) {
+      // Not laid out yet (hidden view/tab, collapsed ancestor, unsized grid cell). Assigning
+      // scrollTop now would silently clamp to 0 and stick there - defer it to the
+      // ResizeObserver, which re-applies it the moment this wheel actually gets a size.
+      this.pendingIndex = clamped;
+      return;
+    }
+
+    this.pendingIndex = null;
+    this.scrollEl.scrollTo({ top: clamped * this.itemHeight, behavior });
   }
 
   private onKeydown = (ev: KeyboardEvent): void => {
