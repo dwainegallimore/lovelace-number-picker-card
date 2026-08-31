@@ -1,7 +1,9 @@
 import { HomeAssistant, LovelaceCardEditor, NumberPickerCardConfig } from './types';
 
 const NAME_TO_LABEL_MAP: Record<string, string> = {
-  entity: 'input_number entity id',
+  // Empty on purpose - the entity picker's own selected-value display (icon + name) already
+  // makes its purpose obvious, so a label above it is redundant technical-sounding noise.
+  entity: '',
   name: 'Name',
   min: 'Minimum',
   max: 'Maximum',
@@ -16,10 +18,15 @@ const NAME_TO_LABEL_MAP: Record<string, string> = {
 
 const SCHEMA = [
   {
+    // Two forced single-column sub-grids side by side, same proven pattern used throughout
+    // this schema - a plain two-item grid lets each field's own intrinsic width decide its
+    // column, and the entity picker's icon/clear/chevron chrome is wider than a plain text
+    // field, so the row rendered visibly lopsided instead of an even 50/50 split.
     type: 'grid',
+    column_min_width: '220px',
     schema: [
-      { name: 'entity', selector: { entity: { domain: 'input_number' } } },
-      { name: 'name', selector: { text: {} } },
+      { type: 'grid', column_min_width: '100%', schema: [{ name: 'entity', selector: { entity: { domain: 'input_number' } } }] },
+      { type: 'grid', column_min_width: '100%', schema: [{ name: 'name', selector: { text: {} } }] },
     ],
   },
   {
@@ -166,7 +173,8 @@ export class NumberPickerCardEditor extends HTMLElement implements LovelaceCardE
     form.hass = this._hass;
     form.data = this._config;
     form.schema = SCHEMA;
-    form.computeLabel = ({ name }: { name: string }): string => NAME_TO_LABEL_MAP[name] || name;
+    form.computeLabel = ({ name }: { name: string }): string =>
+      name in NAME_TO_LABEL_MAP ? NAME_TO_LABEL_MAP[name] : name;
     form.addEventListener('value-changed', ((ev: CustomEvent) => {
       ev.stopPropagation();
       const newConfig = { ...this._config, ...ev.detail.value } as NumberPickerCardConfig;
