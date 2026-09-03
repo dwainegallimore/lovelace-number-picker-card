@@ -328,6 +328,7 @@ export class NumberPickerCard extends HTMLElement implements LovelaceCard {
 
   connectedCallback(): void {
     if (this._config && this._hass) {
+      this._built = false;
       this._update();
     }
   }
@@ -482,7 +483,7 @@ export class NumberPickerCard extends HTMLElement implements LovelaceCard {
     const values = generateNumberRange(this._min, this._max, this._step);
     this._decimals = decimalsForStep(this._step);
     this._currentValue = snapToNearest(parseFloat(entity.state), values);
-    this._wheel?.setValue(this._currentValue);
+    this._wheel?.setValue(this._currentValue, 'auto');
 
     if (this._headerEl) {
       this._headerEl.textContent = this._name ?? '';

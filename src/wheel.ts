@@ -134,7 +134,7 @@ export class NumberWheel {
   }
 
   /** Programmatically move to a value (e.g. syncing from hass). */
-  setValue(value: number): void {
+  setValue(value: number, behavior: ScrollBehavior = 'smooth'): void {
     if (this.values.length === 0) {
       return;
     }
@@ -159,7 +159,7 @@ export class NumberWheel {
       return;
     }
 
-    this.scrollToIndex(index);
+    this.scrollToIndex(index, behavior);
   }
 
   focus(): void {
